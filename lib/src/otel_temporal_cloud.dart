@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_temporal_cloud_suppression.dart';
 
@@ -76,81 +75,112 @@ Future<T> tracedTemporalCloud<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_temporal_cloud');
   final span = t.startSpan('temporal $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'temporal');
-    span.setStringAttribute('rpc.method', operation);
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'temporal')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.account != null) {
-        span.setStringAttribute('temporal.account', res.account!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.account', res.account!)]));
       }
       if (res.namespace != null) {
-        span.setStringAttribute('temporal.namespace', res.namespace!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.namespace', res.namespace!)]));
       }
       if (res.namespaceState != null) {
-        span.setStringAttribute(
-            'temporal.namespace.state', res.namespaceState!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.namespace.state', res.namespaceState!)
+        ]));
       }
       if (res.region != null) {
-        span.setStringAttribute('temporal.region', res.region!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.region', res.region!)]));
       }
       if (res.cloudProvider != null) {
-        span.setStringAttribute('temporal.cloud_provider', res.cloudProvider!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.cloud_provider', res.cloudProvider!)
+        ]));
       }
       if (res.taskQueue != null) {
-        span.setStringAttribute('temporal.task_queue', res.taskQueue!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.task_queue', res.taskQueue!)]));
       }
       if (res.workflowId != null) {
-        span.setStringAttribute('temporal.workflow.id', res.workflowId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.workflow.id', res.workflowId!)]));
       }
       if (res.workflowRunId != null) {
-        span.setStringAttribute('temporal.workflow.run_id', res.workflowRunId!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.workflow.run_id', res.workflowRunId!)
+        ]));
       }
       if (res.workflowType != null) {
-        span.setStringAttribute('temporal.workflow.type', res.workflowType!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.workflow.type', res.workflowType!)
+        ]));
       }
       if (res.workflowStatus != null) {
-        span.setStringAttribute(
-            'temporal.workflow.status', res.workflowStatus!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.workflow.status', res.workflowStatus!)
+        ]));
       }
       if (res.workflowAttempt != null) {
-        span.setIntAttribute('temporal.workflow.attempt', res.workflowAttempt!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('temporal.workflow.attempt', res.workflowAttempt!)
+        ]));
       }
       if (res.activityType != null) {
-        span.setStringAttribute('temporal.activity.type', res.activityType!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.activity.type', res.activityType!)
+        ]));
       }
       if (res.activityId != null) {
-        span.setStringAttribute('temporal.activity.id', res.activityId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.activity.id', res.activityId!)]));
       }
       if (res.activityAttempt != null) {
-        span.setIntAttribute('temporal.activity.attempt', res.activityAttempt!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('temporal.activity.attempt', res.activityAttempt!)
+        ]));
       }
       if (res.activityStatus != null) {
-        span.setStringAttribute(
-            'temporal.activity.status', res.activityStatus!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.activity.status', res.activityStatus!)
+        ]));
       }
       if (res.signalName != null) {
-        span.setStringAttribute('temporal.signal.name', res.signalName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.signal.name', res.signalName!)]));
       }
       if (res.queryName != null) {
-        span.setStringAttribute('temporal.query.name', res.queryName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.query.name', res.queryName!)]));
       }
       if (res.workerIdentity != null) {
-        span.setStringAttribute(
-            'temporal.worker.identity', res.workerIdentity!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('temporal.worker.identity', res.workerIdentity!)
+        ]));
       }
       if (res.actionsCount != null) {
-        span.setIntAttribute('temporal.actions.count', res.actionsCount!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('temporal.actions.count', res.actionsCount!)]));
       }
       if (res.actionsPerSecond != null) {
-        span.setIntAttribute(
-            'temporal.actions_per_second', res.actionsPerSecond!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt(
+              'temporal.actions_per_second', res.actionsPerSecond!)
+        ]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('temporal.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('temporal.error.code', res.errorCode!)]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400) ||
@@ -160,8 +190,10 @@ Future<T> tracedTemporalCloud<T>({
           res.activityStatus == 'Failed' ||
           res.activityStatus == 'TimedOut';
       if (fail) {
-        span.setStringAttribute(
-            ErrorResource.errorType.key, res.errorCode ?? 'temporal.error');
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              ErrorResource.errorType.key, res.errorCode ?? 'temporal.error')
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
