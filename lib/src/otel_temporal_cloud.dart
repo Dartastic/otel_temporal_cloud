@@ -1,11 +1,12 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_temporal_cloud_suppression.dart';
 
 class TemporalCloudResult {
+  /// Creates a result.
   const TemporalCloudResult({
     this.account,
     this.namespace,
@@ -57,8 +58,13 @@ class TemporalCloudResult {
   final String? errorMessage;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class TemporalCloudCallResult<T> {
+  /// Creates a call result.
   const TemporalCloudCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final TemporalCloudResult? result;
 }
@@ -66,121 +72,133 @@ class TemporalCloudCallResult<T> {
 Future<T> tracedTemporalCloud<T>({
   required String operation,
   required Future<TemporalCloudCallResult<T>> Function() invoke,
-  Tracer? tracer,
+  APITracer? tracer,
 }) async {
   if (temporalCloudInstrumentationSuppressed()) {
     final r = await invoke();
     return r.value;
   }
-  final t = tracer ?? OTel.tracerProvider().getTracer('otel_temporal_cloud');
+  final t = tracer ?? OTelAPI.tracerProvider().getTracer('otel_temporal_cloud');
   final span = t.startSpan('temporal $operation', kind: SpanKind.client);
   try {
+    span.addAttributes(OTelAPI.attributes(
+        [OTelAPI.attributeString('rpc.system', 'temporal')]));
     span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.system', 'temporal')]));
-    span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
+        OTelAPI.attributes([OTelAPI.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.account != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.account', res.account!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.account', res.account!)]));
       }
       if (res.namespace != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.namespace', res.namespace!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.namespace', res.namespace!)]));
       }
       if (res.namespaceState != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.namespace.state', res.namespaceState!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'temporal.namespace.state', res.namespaceState!)
         ]));
       }
       if (res.region != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.region', res.region!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.region', res.region!)]));
       }
       if (res.cloudProvider != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.cloud_provider', res.cloudProvider!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.cloud_provider', res.cloudProvider!)
         ]));
       }
       if (res.taskQueue != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.task_queue', res.taskQueue!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.task_queue', res.taskQueue!)]));
       }
       if (res.workflowId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.workflow.id', res.workflowId!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.workflow.id', res.workflowId!)
+        ]));
       }
       if (res.workflowRunId != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.workflow.run_id', res.workflowRunId!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'temporal.workflow.run_id', res.workflowRunId!)
         ]));
       }
       if (res.workflowType != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.workflow.type', res.workflowType!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.workflow.type', res.workflowType!)
         ]));
       }
       if (res.workflowStatus != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.workflow.status', res.workflowStatus!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'temporal.workflow.status', res.workflowStatus!)
         ]));
       }
       if (res.workflowAttempt != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('temporal.workflow.attempt', res.workflowAttempt!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
+              'temporal.workflow.attempt', res.workflowAttempt!)
         ]));
       }
       if (res.activityType != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.activity.type', res.activityType!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.activity.type', res.activityType!)
         ]));
       }
       if (res.activityId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.activity.id', res.activityId!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.activity.id', res.activityId!)
+        ]));
       }
       if (res.activityAttempt != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('temporal.activity.attempt', res.activityAttempt!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
+              'temporal.activity.attempt', res.activityAttempt!)
         ]));
       }
       if (res.activityStatus != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.activity.status', res.activityStatus!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'temporal.activity.status', res.activityStatus!)
         ]));
       }
       if (res.signalName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.signal.name', res.signalName!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('temporal.signal.name', res.signalName!)
+        ]));
       }
       if (res.queryName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.query.name', res.queryName!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.query.name', res.queryName!)]));
       }
       if (res.workerIdentity != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('temporal.worker.identity', res.workerIdentity!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'temporal.worker.identity', res.workerIdentity!)
         ]));
       }
       if (res.actionsCount != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('temporal.actions.count', res.actionsCount!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('temporal.actions.count', res.actionsCount!)
+        ]));
       }
       if (res.actionsPerSecond != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
               'temporal.actions_per_second', res.actionsPerSecond!)
         ]));
       }
       if (res.statusCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('http.response.status_code', res.statusCode!)
+        ]));
       }
       if (res.errorCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('temporal.error.code', res.errorCode!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('temporal.error.code', res.errorCode!)]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400) ||
@@ -190,9 +208,9 @@ Future<T> tracedTemporalCloud<T>({
           res.activityStatus == 'Failed' ||
           res.activityStatus == 'TimedOut';
       if (fail) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
-              ErrorResource.errorType.key, res.errorCode ?? 'temporal.error')
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              ErrorAttributes.errorType.key, res.errorCode ?? 'temporal.error')
         ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
